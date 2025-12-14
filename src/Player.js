@@ -117,8 +117,8 @@ class Player {
             const deltaX = e.movementX || 0;
             const deltaY = e.movementY || 0;
 
-            this.yaw -= deltaX * this.sensitivity;
-            this.pitch -= deltaY * this.sensitivity;
+            this.yaw += deltaX * this.sensitivity;
+            this.pitch += deltaY * this.sensitivity;
 
             // Clamp pitch to prevent flipping
             this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
