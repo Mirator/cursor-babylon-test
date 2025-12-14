@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quake-like Space Shooter</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="ui-container">
+        <div id="hud">
+            <div id="health-bar-container">
+                <div id="health-bar"></div>
+                <span id="health-text">100</span>
+            </div>
+            <div id="ammo-container">
+                <span id="ammo-text">30 / 90</span>
+            </div>
+            <div id="score-container">
+                <span id="score-text">Score: 0</span>
+            </div>
+            <div id="crosshair"></div>
+        </div>
+        <div id="game-over-screen" class="hidden">
+            <h1>Game Over</h1>
+            <p id="final-score">Final Score: 0</p>
+            <button id="restart-button">Restart</button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
+
