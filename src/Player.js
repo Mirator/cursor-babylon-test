@@ -1,5 +1,5 @@
 // Using global Babylon namespace from CDN
-const { FreeCamera, Vector3, MeshBuilder, StandardMaterial, Color3 } = BABYLON;
+const { FreeCamera, Vector3, MeshBuilder, StandardMaterial, Color3, TransformNode } = BABYLON;
 
 class Player {
     constructor(scene, canvas) {
@@ -48,6 +48,9 @@ class Player {
         this.mesh = MeshBuilder.CreateBox('playerMesh', { width: 1, height: 2, depth: 1 }, scene);
         this.mesh.isVisible = false;
         this.mesh.position = this.camera.position.clone();
+        
+        // Create stick figure
+        this.stickFigure = this.createStickFigure(scene);
     }
 
     setupInput() {
@@ -129,6 +132,75 @@ class Player {
         }
     }
 
+    createStickFigure(scene) {
+        // Create root node to hold all parts
+        const root = new TransformNode('playerStickFigure', scene);
+        
+        // Create material (white/light gray for player)
+        const material = new StandardMaterial('playerStickMaterial', scene);
+        material.diffuseColor = new Color3(0.9, 0.9, 0.9);
+        material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+        
+        // Head (sphere)
+        const head = MeshBuilder.CreateSphere('playerHead', { diameter: 0.35 }, scene);
+        head.position.y = 1.0; // Position above torso
+        head.material = material;
+        head.parent = root;
+        
+        // Torso (cylinder)
+        const torso = MeshBuilder.CreateCylinder('playerTorso', { 
+            height: 1.0, 
+            diameter: 0.15 
+        }, scene);
+        torso.position.y = 0.5; // Center of torso
+        torso.material = material;
+        torso.parent = root;
+        
+        // Left arm
+        const leftArm = MeshBuilder.CreateCylinder('playerLeftArm', { 
+            height: 0.6, 
+            diameter: 0.1 
+        }, scene);
+        leftArm.position.x = -0.3;
+        leftArm.position.y = 0.7;
+        leftArm.rotation.z = Math.PI / 2; // Rotate to horizontal
+        leftArm.material = material;
+        leftArm.parent = root;
+        
+        // Right arm
+        const rightArm = MeshBuilder.CreateCylinder('playerRightArm', { 
+            height: 0.6, 
+            diameter: 0.1 
+        }, scene);
+        rightArm.position.x = 0.3;
+        rightArm.position.y = 0.7;
+        rightArm.rotation.z = Math.PI / 2; // Rotate to horizontal
+        rightArm.material = material;
+        rightArm.parent = root;
+        
+        // Left leg
+        const leftLeg = MeshBuilder.CreateCylinder('playerLeftLeg', { 
+            height: 0.8, 
+            diameter: 0.12 
+        }, scene);
+        leftLeg.position.x = -0.15;
+        leftLeg.position.y = -0.4;
+        leftLeg.material = material;
+        leftLeg.parent = root;
+        
+        // Right leg
+        const rightLeg = MeshBuilder.CreateCylinder('playerRightLeg', { 
+            height: 0.8, 
+            diameter: 0.12 
+        }, scene);
+        rightLeg.position.x = 0.15;
+        rightLeg.position.y = -0.4;
+        rightLeg.material = material;
+        rightLeg.parent = root;
+        
+        return root;
+    }
+
     update(deltaTime) {
         // Calculate movement direction based on camera rotation
         const forward = new Vector3(
@@ -205,6 +277,15 @@ class Player {
 
         this.camera.position = newPosition;
         this.mesh.position = this.camera.position.clone();
+        
+        // Update stick figure position and rotation
+        if (this.stickFigure) {
+            // Position stick figure at camera position, but offset down so head aligns with camera
+            this.stickFigure.position = this.camera.position.clone();
+            this.stickFigure.position.y -= 0.35; // Offset so head is at camera height
+            // Rotate stick figure to match camera yaw
+            this.stickFigure.rotation.y = this.yaw;
+        }
     }
 
     takeDamage(amount) {
@@ -218,6 +299,11 @@ class Player {
         this.yaw = 0;
         this.pitch = 0;
         this.camera.rotation.set(0, 0, 0);
+        if (this.stickFigure) {
+            this.stickFigure.position = this.camera.position.clone();
+            this.stickFigure.position.y -= 0.35;
+            this.stickFigure.rotation.y = 0;
+        }
     }
 
     get position() {
